@@ -18,6 +18,7 @@ public class Creator {
 	public static void main(String[] args) throws IOException{
 		Index index = Index.createIndexFromDocuments(new File("documents/processed/"));
 		index.saveIndex(new File("index/default/"), false);	
+	
 	}
 
 }

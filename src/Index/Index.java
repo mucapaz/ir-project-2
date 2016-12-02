@@ -36,6 +36,42 @@ public class Index {
 		return index;
 	}
 	
+	public static Index createIndexFromIndexFiles(File indexMapFile, 
+			File docMapFile, boolean compressed) throws FileNotFoundException{
+		
+		Index index = new Index();
+		
+		Scanner in = new Scanner(indexMapFile);
+		
+		String[] input;
+		int last, at;
+		while(in.hasNextLine()){
+			input = in.nextLine().split(" ");
+			index.indexMap.put(input[0], new ArrayList<Integer>());
+			last = -1;
+			
+			for(String i : input){
+				at = Integer.parseInt(i);
+				if(last == -1 || !compressed)
+					index.indexMap.get(input[0]).add(at);
+				else
+					index.indexMap.get(input[0]).add(at - last);
+
+				last = at;
+			}
+		}
+		
+		
+		in = new Scanner(docMapFile);
+		
+		while(in.hasNextLine()){
+			input = in.nextLine().split(" ");
+			index.docMap.put(Integer.parseInt((input[0])), input[1]);
+		}
+		
+		return index;
+	}
+	
 	
 	private Index(){
 		indexMap = new HashMap<String, List<Integer>>();
