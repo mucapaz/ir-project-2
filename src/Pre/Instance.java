@@ -1,3 +1,4 @@
+package Pre;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -21,7 +22,7 @@ public class Instance {
 		
 		String[] attrValue;
 		while(in.hasNextLine()){
-			String line = in.nextLine();
+			String line = in.nextLine().toLowerCase();
 			attrValue = line.split(" ");
 			
 			if(attrValueMap.containsKey(attrValue[0])){
