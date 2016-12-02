@@ -1,4 +1,4 @@
-package Pre;
+package pre;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,15 +29,18 @@ public class PreProcessor {
 		
 		int x =0;
 		
+		File directory = new File("documents/processed/");
+		if(!directory.exists()) directory.mkdirs();
+				
 		for(Instance inst : instances) {
 			inst.keep(keep);
-			inst.saveTo(new File("documents/processed/" + x++));
+			inst.saveTo(new File( directory.getAbsolutePath() + "/" + x++));
 		}
 			
 	}
 
 	public static Instance[] readInstances(File dir) throws FileNotFoundException{
-		Instance[] instances = new Instance[dir.listFiles().length];
+		Instance[] instances = new Instance[dir.listFiles( ).length];
 
 		int x=0;
 		for(File file : dir.listFiles()){

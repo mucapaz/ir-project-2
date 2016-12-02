@@ -1,4 +1,4 @@
-package Index;
+package index;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,12 +11,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Index {
 
-	Map<String, List<Integer>> indexMap;
-	Map<Integer, String> docMap;
-
+	private Map<String, List<Integer>> indexMap;
+	private Map<Integer, String> docMap;
+	
+	public static void main(String[] args) throws IOException{
+		Index index = Index.createIndexFromDocuments(new File("documents/processed/"));
+		index.saveIndex(new File("index/default/"), false);
+		
+		
+		
+//		Index i2 = Index.createIndexFromIndexFiles(new File("index/default/indexMap"),
+//				new File("index/default/docMap"), false);
+//		
+//		
+//		i2.saveIndex(new File("index/dois/"), false);
+		
+	}	
+	
 	public static Index createIndexFromDocuments(File directory) 
 			throws FileNotFoundException{
 		
@@ -26,7 +41,7 @@ public class Index {
 
 		int x=0;
 		for(File doc : docs){
-			index.docMap.put(x, doc.getAbsolutePath());
+			index.getDocMap().put(x, doc.getAbsolutePath());
 			index.addDocToIndex(doc, x);
 			x++;
 		}
@@ -43,30 +58,34 @@ public class Index {
 		
 		Scanner in = new Scanner(indexMapFile);
 		
+		String label;
 		String[] input;
 		int last, at;
 		while(in.hasNextLine()){
 			input = in.nextLine().split(" ");
-			index.indexMap.put(input[0], new ArrayList<Integer>());
+			index.getIndexMap().put(input[0], new ArrayList<Integer>());
 			last = -1;
 			
-			for(String i : input){
-				at = Integer.parseInt(i);
-				if(last == -1 || !compressed)
-					index.indexMap.get(input[0]).add(at);
-				else
-					index.indexMap.get(input[0]).add(at - last);
-
-				last = at;
+			for(int x=1;x<input.length;x++){
+				
+				at = Integer.parseInt(input[x]);
+				if(last == -1 || !compressed){
+					index.getIndexMap().get(input[0]).add(at);
+					last = at;
+				}else{
+					index.getIndexMap().get(input[0]).add(at + last);
+					last = at + last;
+				}
+				
 			}
 		}
-		
+
 		
 		in = new Scanner(docMapFile);
 		
 		while(in.hasNextLine()){
 			input = in.nextLine().split(" ");
-			index.docMap.put(Integer.parseInt((input[0])), input[1]);
+			index.getDocMap().put(Integer.parseInt((input[0])), input[1]);
 		}
 		
 		return index;
@@ -74,13 +93,13 @@ public class Index {
 	
 	
 	private Index(){
-		indexMap = new HashMap<String, List<Integer>>();
-		docMap = new HashMap<Integer, String>();
+		setIndexMap(new HashMap<String, List<Integer>>());
+		setDocMap(new HashMap<Integer, String>());
 	}
 	
 	private void sortIndexMap() {
-		for(String label : indexMap.keySet())
-			Collections.sort(indexMap.get(label));
+		for(String label : getIndexMap().keySet())
+			Collections.sort(getIndexMap().get(label));
 	}
 
 	public void addDocToIndex(File doc, int docNumber) 
@@ -96,11 +115,11 @@ public class Index {
 			for(int x=1;x<inputs.length;x++){
 				label = createLabel(inputs[0],inputs[x]);
 
-				if(!indexMap.containsKey(label)){
-					indexMap.put(label, new ArrayList<Integer>());
-					indexMap.get(label).add(docNumber);
+				if(!getIndexMap().containsKey(label)){
+					getIndexMap().put(label, new ArrayList<Integer>());
+					getIndexMap().get(label).add(docNumber);
 				}else{
-					indexMap.get(label).add(docNumber);
+					getIndexMap().get(label).add(docNumber);
 				}
 			}
 		}
@@ -120,10 +139,10 @@ public class Index {
 		FileWriter pw = new FileWriter(file);
 		
 		int last;
-		for(String label : indexMap.keySet()){
+		for(String label : getIndexMap().keySet()){
 			pw.write(label);
 			last = -1;
-			for(Integer docNumber : indexMap.get(label)){
+			for(Integer docNumber : getIndexMap().get(label)){
 				if(last == -1 || !compress) pw.write(" " + docNumber);
 				else pw.write(" " + (docNumber - last));
 				last = docNumber;
@@ -137,8 +156,8 @@ public class Index {
 	public void saveDocMap(File file) throws IOException{
 		FileWriter pw = new FileWriter(file);
 
-		for(Integer docNumber : docMap.keySet()){
-			pw.write(docNumber + " " + docMap.get(docNumber));
+		for(Integer docNumber : getDocMap().keySet()){
+			pw.write(docNumber + " " + getDocMap().get(docNumber));
 			pw.write("\n");
 		}
 		pw.flush();
@@ -146,8 +165,28 @@ public class Index {
 	}
 	
 
-	public static String createLabel(String s1, String s2){
+	public String createLabel(String s1, String s2){
 		return "[" + s1 + "].[" + s2 +"]";
 	}
+	
+	public Set<String> getTerms(){
+		return getIndexMap().keySet();
+	}
+	
+	public Map<Integer, String> getDocMap(){
+		return docMap;
+	}
 
+	public Map<String, List<Integer>> getIndexMap() {
+		return indexMap;
+	}
+
+	public void setIndexMap(Map<String, List<Integer>> indexMap) {
+		this.indexMap = indexMap;
+	}
+
+	public void setDocMap(Map<Integer, String> docMap) {
+		this.docMap = docMap;
+	}
+	
 }

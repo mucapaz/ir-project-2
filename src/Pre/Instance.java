@@ -1,4 +1,4 @@
-package Pre;
+package pre;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -47,6 +47,7 @@ public class Instance {
 	}
 
 	public void saveTo(File file) throws IOException {
+
 		FileWriter fw = new FileWriter(file);
 
 		String[] ar = attrValueMap.keySet().toArray(new String[0]);
