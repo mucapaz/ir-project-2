@@ -15,9 +15,10 @@ public class Main {
 		
 		List<String> query = new ArrayList<String>();
 		query.add("[modelo].[soul]");
+		query.add("[modelo].[soul]");
 		query.add("[versao].[t5]");
 		
-		String[] res = search.search(query);
+		String[] res = search.rankedSearch(query);
 		
 		for(String i : res){
 			System.out.println(i);
