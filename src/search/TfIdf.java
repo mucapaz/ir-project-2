@@ -53,7 +53,11 @@ public class TfIdf {
 
 		for(Integer at : index.getIndexMap().get(term))
 			if(at.equals(doc)) ret+=1.0;
-
+		
+		if(ret != 0.0) {
+			ret = 1 + Math.log(ret);
+		}
+		
 		return ret;		
 	}
 

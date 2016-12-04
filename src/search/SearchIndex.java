@@ -101,7 +101,7 @@ public class SearchIndex {
 		    @Override
 		    public int compare(RankedDoc left, RankedDoc right) {
 		    	if(left.rank == right.rank){
-		    		return left.at - right.at;
+		    		return left.doc.compareTo(right.doc);
 		    	}else{
 		    		if(left.rank > right.rank) return -1;
 		    		else return 1;
